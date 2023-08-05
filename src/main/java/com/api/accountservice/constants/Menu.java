@@ -7,4 +7,5 @@ package com.api.accountservice.constants;
 public class Menu {
 
    public static final String ACCOUNT_MENU = "/account";
+   public static final String OFFER_MENU = "/offer";
 }
