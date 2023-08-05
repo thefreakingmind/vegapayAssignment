@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -46,15 +47,11 @@ public class AccountServiceImpl implements AccountService {
    }
 
    @Override
-   public Optional<List<AccountDTO>> getAllAccounts(String accountId) {
-      Optional<List<Account>> getAccountsForAccountId = accountRepository.findAllByAccountId(accountId);
-      if(getAccountsForAccountId.isEmpty()){
-         return Optional.empty();
+   public Optional<AccountDTO> getAllAccounts(String accountId) {
+      Optional<Account> getAccountForAccountId = accountRepository.findAccountByAccountId(accountId);
+      if(!getAccountForAccountId.isPresent()){
+         throw new RestClientException("Account does not exist");
       }
-      return Optional.ofNullable(getAccountsForAccountId
-              .get()
-              .stream()
-              .map(accountHelper::AccountEntityToDTO)
-              .collect(Collectors.toList()));
+      return Optional.ofNullable(accountHelper.AccountEntityToDTO(getAccountForAccountId.get()));
    }
 }

@@ -35,8 +35,8 @@ public class AccountController {
    }
 
    @GetMapping("/get")
-   public APIResponse<List<AccountDTO>> getAllAccount(@RequestParam("accountId") String accountId){
-      return APIResponse.<List<AccountDTO>>builder()
+   public APIResponse<AccountDTO> getAllAccount(@RequestParam("accountId") String accountId){
+      return APIResponse.<AccountDTO>builder()
               .message("Fetched")
               .data(accountService.getAllAccounts(accountId).get())
               .success(true)

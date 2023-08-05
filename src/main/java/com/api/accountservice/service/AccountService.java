@@ -20,6 +20,6 @@ public interface AccountService {
 
    public Account createUserAccount(AccountDTO accountDTO);
 
-   public Optional<List<AccountDTO>> getAllAccounts(String accountId);
+   public Optional<AccountDTO> getAllAccounts(String accountId);
 
 }
