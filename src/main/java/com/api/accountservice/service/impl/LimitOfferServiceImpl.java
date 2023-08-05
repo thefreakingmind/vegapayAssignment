@@ -13,9 +13,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author Salman aka theFreakingMind
@@ -33,10 +35,10 @@ public class LimitOfferServiceImpl implements LimitOfferService {
    @Override
    public LimitOfferDTO createLimitOffer(LimitOfferDTO offerDTO) {
       Optional<Account> account = accountRepository.findAccountByAccountId(offerDTO.getAccountId());
-      if(!account.isPresent()){
+      if (!account.isPresent()) {
          throw new RuntimeException("Account is not present");
       }
-      switch (offerDTO.getLimitType()){
+      switch (offerDTO.getLimitType()) {
          case ACCOUNT_LIMIT:
             return updateAccountLimit(account, offerDTO);
          case PER_TRANSACTION_LIMIT:
@@ -48,7 +50,7 @@ public class LimitOfferServiceImpl implements LimitOfferService {
 
    private LimitOfferDTO updateTransactionList(Optional<Account> account, LimitOfferDTO offerDTO) {
       Account accountData = account.get();
-      if(accountData.getPerTransactionLimit() > offerDTO.getNewLimit()){
+      if (accountData.getPerTransactionLimit() > offerDTO.getNewLimit()) {
          throw new RuntimeException("New Limit cannot be less then old limit");
       }
       accountData.setLastPerTransactionLimit(accountData.getPerTransactionLimit());
@@ -72,7 +74,7 @@ public class LimitOfferServiceImpl implements LimitOfferService {
 
    private LimitOfferDTO updateAccountLimit(Optional<Account> account, LimitOfferDTO offerDTO) {
       Account accountData = account.get();
-      if(accountData.getAccountLimit() > offerDTO.getNewLimit()){
+      if (accountData.getAccountLimit() > offerDTO.getNewLimit()) {
          throw new RuntimeException("New Limit cannot be less then old limit");
       }
       accountData.setLastAccountLimit(accountData.getAccountLimit());
@@ -83,14 +85,23 @@ public class LimitOfferServiceImpl implements LimitOfferService {
    }
 
    @Override
-   public List<LimitOfferDTO> getActiveLimitOffer(String accountId, LocalDateTime activeDate) {
-      return null;
+   public List<LimitOfferDTO> getActiveLimitOffer(String accountId, LocalDate activeDate) {
+      LocalDateTime localDateTime = activeDate.atStartOfDay();
+      Optional<List<LimitOffer>> limitOffers = orderRepository.findAllByAccount_AccountIdAndOfferExpiryTimeBefore(accountId, localDateTime);
+      if (limitOffers.isEmpty()) {
+         throw new RestClientException("Invalid Request");
+      }
+      return limitOffers
+              .get()
+              .stream()
+              .map(accountHelper::LimitEntityToDTO)
+              .collect(Collectors.toList());
    }
 
    @Override
    public LimitOfferDTO updateLimitOffer(String offerLimitId, String status) {
       Optional<LimitOffer> offer = orderRepository.findLimitOfferByLimitOfferId(offerLimitId);
-      if(!offer.isPresent()){
+      if (!offer.isPresent()) {
          throw new RestClientException("Offer is not present with this ID");
       }
       LimitOffer offerData = offer.get();

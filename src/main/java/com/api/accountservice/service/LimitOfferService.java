@@ -3,6 +3,7 @@ package com.api.accountservice.service;
 import com.api.accountservice.dto.LimitOfferDTO;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -16,7 +17,7 @@ public interface LimitOfferService {
 
    public LimitOfferDTO createLimitOffer(LimitOfferDTO offerDTO);
 
-   public List<LimitOfferDTO> getActiveLimitOffer(String accountId, LocalDateTime activeDate);
+   public List<LimitOfferDTO> getActiveLimitOffer(String accountId, LocalDate activeDate);
 
    public LimitOfferDTO updateLimitOffer(String offerId, String status);
 }

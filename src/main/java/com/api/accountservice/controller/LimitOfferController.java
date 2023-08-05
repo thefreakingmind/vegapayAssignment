@@ -7,6 +7,9 @@ import com.api.accountservice.service.LimitOfferService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.List;
+
 /**
  * @author Salman aka theFreakingMind
  * @date 05/08/23
@@ -32,6 +35,16 @@ public class LimitOfferController {
                                                       @RequestParam("status") String status){
       return APIResponse.<LimitOfferDTO>builder()
               .data(orderService.updateLimitOffer(limitOfferId, status))
+              .message("Fetched")
+              .success(true)
+              .build();
+   }
+
+   @GetMapping("/get")
+   public APIResponse<List<LimitOfferDTO>> findAllLimitOrder(@RequestParam("accountId") String accountId,
+                                                             @RequestParam("activeDate")LocalDate localDate){
+      return APIResponse.<List<LimitOfferDTO>>builder()
+              .data(orderService.getActiveLimitOffer(accountId, localDate))
               .message("Fetched")
               .success(true)
               .build();
