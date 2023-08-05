@@ -16,5 +16,5 @@ public interface LimitOfferRepository extends JpaRepository<LimitOffer, String> 
 
    public Optional<LimitOffer> findLimitOfferByLimitOfferId(String offerId);
 
-   public Optional<List<LimitOffer>> findAllByAccount_AccountIdAndOfferExpiryTimeBefore(String accountId, LocalDateTime localDate);
+   public Optional<List<LimitOffer>> findAllByAccount_AccountId(String accountId);
 }

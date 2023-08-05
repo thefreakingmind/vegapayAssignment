@@ -42,7 +42,7 @@ public class LimitOfferController {
 
    @GetMapping("/get")
    public APIResponse<List<LimitOfferDTO>> findAllLimitOrder(@RequestParam("accountId") String accountId,
-                                                             @RequestParam("activeDate")LocalDate localDate){
+                                                             @RequestParam(value = "activeDate", required = false)String localDate){
       return APIResponse.<List<LimitOfferDTO>>builder()
               .data(orderService.getActiveLimitOffer(accountId, localDate))
               .message("Fetched")

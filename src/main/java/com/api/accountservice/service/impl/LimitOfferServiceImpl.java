@@ -85,15 +85,15 @@ public class LimitOfferServiceImpl implements LimitOfferService {
    }
 
    @Override
-   public List<LimitOfferDTO> getActiveLimitOffer(String accountId, LocalDate activeDate) {
-      LocalDateTime localDateTime = activeDate.atStartOfDay();
-      Optional<List<LimitOffer>> limitOffers = orderRepository.findAllByAccount_AccountIdAndOfferExpiryTimeBefore(accountId, localDateTime);
+   public List<LimitOfferDTO> getActiveLimitOffer(String accountId, String activeDate) {
+      Optional<List<LimitOffer>> limitOffers = orderRepository.findAllByAccount_AccountId(accountId);
       if (limitOffers.isEmpty()) {
          throw new RestClientException("Invalid Request");
       }
       return limitOffers
               .get()
               .stream()
+              .filter(limitOffer -> activeDate == null || isActiveOffer(limitOffer, activeDate))
               .map(accountHelper::LimitEntityToDTO)
               .collect(Collectors.toList());
    }
@@ -107,5 +107,11 @@ public class LimitOfferServiceImpl implements LimitOfferService {
       LimitOffer offerData = offer.get();
       offerData.setAccountStatus(AccountStatus.valueOf(status));
       return accountHelper.LimitEntityToDTO(orderRepository.save(offerData));
+   }
+
+   private boolean isActiveOffer(LimitOffer limitOffer, String activeDate) {
+      LocalDate date = LocalDate.parse(activeDate);
+      LocalDateTime time = date.atStartOfDay();
+      return time.isBefore(limitOffer.getOfferExpiryTime());
    }
 }

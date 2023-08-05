@@ -17,7 +17,7 @@ public interface LimitOfferService {
 
    public LimitOfferDTO createLimitOffer(LimitOfferDTO offerDTO);
 
-   public List<LimitOfferDTO> getActiveLimitOffer(String accountId, LocalDate activeDate);
+   public List<LimitOfferDTO> getActiveLimitOffer(String accountId, String activeDate);
 
    public LimitOfferDTO updateLimitOffer(String offerId, String status);
 }
